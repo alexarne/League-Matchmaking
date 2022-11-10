@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "league-matchmaking",
   "version": "1.0.0",
   "description": "Proof of concept for tournament matchmaking in League of Legends using Riot Games' API",
@@ -18,6 +19,7 @@
   },
   "homepage": "https://github.com/alexarne/League-Matchmaking#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.0"
   }
 }
