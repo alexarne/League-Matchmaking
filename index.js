@@ -1,6 +1,6 @@
 // import fetch from "node-fetch"
 
-const API_KEY = ".."
+const API_KEY = process.env.API_KEY
 
 fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
     .then(response => response.text())
