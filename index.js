@@ -1,15 +1,35 @@
+// const fetch = require("node-fetch")
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const http = require("http")
+require("dotenv").config()
 const port = process.env.PORT || 3000
 
-const server = http.createServer(function(req, res) {
+
+const server = http.createServer(async function(req, res) {
     res.write("Hello Node")
-    res.write("Hello Node:")
 
     const API_KEY = process.env.API_KEY
-    console.log(API_KEY)
-    fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
-        .then(response => response.text())
-        .then(data => res.write(data))
+    
+    let response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
+    let data = await response.text()
+    res.write(data)
+    
+    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
+    data = await response.text()
+    res.write(data)
+    
+    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
+    data = await response.text()
+    res.write(data)
+    
+    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
+    data = await response.text()
+    res.write(data)
+    
+    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
+    data = await response.text()
+    res.write(data)
     
     res.end()
 })
