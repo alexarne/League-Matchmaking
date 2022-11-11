@@ -11,24 +11,8 @@ const server = http.createServer(async function(req, res) {
 
     const API_KEY = process.env.API_KEY
     
-    let response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
-    let data = await response.text()
-    res.write(data)
-    
-    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
-    data = await response.text()
-    res.write(data)
-    
-    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
-    data = await response.text()
-    res.write(data)
-    
-    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
-    data = await response.text()
-    res.write(data)
-    
-    response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
-    data = await response.text()
+    const response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
+    const data = await response.text()
     res.write(data)
     
     res.end()
