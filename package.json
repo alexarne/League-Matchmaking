@@ -5,6 +5,7 @@
   "description": "Proof of concept for tournament matchmaking in League of Legends using Riot Games' API",
   "main": "index.js",
   "scripts": {
+    "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
