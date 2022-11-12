@@ -1,42 +1,57 @@
-// const fetch = require("node-fetch")
 const fetch = (...args) =>
-  import('node-fetch').then(({ default: fetch }) => fetch(...args));
-const http = require("http")
-const fs = require("fs")
+    import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+const express = require("express")
 require("dotenv").config()
+
+const app = express()
 const port = process.env.PORT || 3000
 
-
-const server = http.createServer(async function(req, res) {
-    res.writeHead(200, { "Content-Type": "text/html" })
-    fs.readFile("index.html", function(error, data) {
-        if (error) {
-            res.writeHead(404)
-            res.write("Error: File Not Found")
-        } else {
-            res.write(data)
-        }
-        res.end()
-    })
-
-
-    // res.write("Hello Node")
-
-    // const API_KEY = process.env.API_KEY
-    
-    // const response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
-    // const data = await response.text()
-    // res.write(data)
-    
+app.listen(port, () => {
+    console.log("Starting server at port " + port)
 })
+app.use(express.static("public"))
 
-server.listen(port, function(error) {
-    if (error) {
-        console.log("Something went wrong", error)
-    } else {
-        console.log("Server listening on port " + port)
-    }
-})
+
+// const server = http.createServer(async function(req, res) {
+//     res.writeHead(200, { "Content-Type": "text/html" })
+//     fs.readFile("public/index.html", function(error, data) {
+//         if (error) {
+//             res.writeHead(404)
+//             res.write("Error: File Not Found")
+//         } else {
+//             res.write(data)
+//         }
+//         res.end()
+//     })
+//     // res.writeHead(200, { "Content-Type": "text/css" })
+//     // fs.readFile("public/styles.css", function(error, data) {
+//     //     if (error) {
+//     //         res.writeHead(404)
+//     //         res.write("Error: File Not Found")
+//     //     } else {
+//     //         res.write(data)
+//     //     }
+//     // })
+
+
+//     // res.write("Hello Node")
+//     // res.end()
+//     // const API_KEY = process.env.API_KEY
+    
+//     // const response = await fetch("https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + API_KEY)
+//     // const data = await response.text()
+//     // res.write(data)
+    
+// })
+
+// server.listen(port, function(error) {
+//     if (error) {
+//         console.log("Something went wrong", error)
+//     } else {
+//         console.log("Server listening on port " + port)
+//     }
+// })
 
 
 // // import fetch from "node-fetch"
