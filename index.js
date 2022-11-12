@@ -3,39 +3,28 @@ const fetch = (...args) =>
 
 const express = require("express")
 require("dotenv").config()
-
-const app = express()
 const PORT = process.env.PORT
 const URL = process.env.URL
 const API_KEY = process.env.API_KEY
+
+const app = express()
+app.use(express.json())
 
 app.listen(PORT, () => {
     console.log("Starting server at port " + PORT)
 })
 app.use(express.static("public"))
 
-app.get("/getCode", async (req, res) => {
-    console.log(req.params)
-    // const code = await fetch(
-
-    // )
-    
-    const data = {
-        weather: 2,
-        air_quality: 4
-    };
-    res.json(data);
+app.post("/getCode", async (req, res) => {
+    const response = await fetch(
+        `https://americas.api.riotgames.com/lol/tournament-stub/v4/codes?count=1&tournamentId=${tournamentID}&api_key=` + API_KEY,
+        requestParams("POST", req.body)
+    )
+    const code = await response.json()
+    res.json(code[0]);
 })
 
-fetch(URL + "/getCode"
-    // requestParams("POST", {
-    //     loler: 123,
-    //     hi: "hello"
-    // })
-).then(response => response.json()).then(data => console.log(data))
-console.log("fetched")
-
-// Required for creating codes/games
+// Required for creating codes/games, static for server
 var providerID
 var tournamentID
 setVars()
@@ -43,6 +32,16 @@ setVars()
 async function setVars() {
     await setProviderID()
     await setTournamentID()
+
+    fetch(URL + "/getCode",
+        requestParams("POST", {
+            mapType: "SUMMONERS_RIFT",
+            pickType: "BLIND_PICK",
+            spectatorType: "NONE",
+            teamSize: 1
+        })
+    ).then(response => response.json()).then(data => console.log("received:", data))
+    console.log("fetched")
 }
 
 async function setProviderID() {
