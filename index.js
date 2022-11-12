@@ -1,16 +1,81 @@
 const fetch = (...args) =>
-    import('node-fetch').then(({ default: fetch }) => fetch(...args));
+    import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const express = require("express")
 require("dotenv").config()
 
 const app = express()
-const port = process.env.PORT || 3000
+const PORT = process.env.PORT
+const URL = "http://" + process.env.ROOT_URL + ":" + PORT
+const API_KEY = process.env.API_KEY
 
-app.listen(port, () => {
-    console.log("Starting server at port " + port)
+app.listen(PORT, () => {
+    console.log("Starting server at port " + PORT)
 })
 app.use(express.static("public"))
+
+app.get("/getCode", async (req, res) => {
+    // console.log(req)
+    // const code = await fetch(
+
+    // )
+    
+    const data = {
+        weather: 2,
+        air_quality: 4
+    };
+    res.json(data);
+})
+
+fetch(URL + "/getCode").then(response => response.json()).then(data => console.log(data))
+console.log("fetched")
+
+// Required for creating codes/games
+var providerID
+var tournamentID
+setVars()
+
+async function setVars() {
+    await setProviderID()
+    await setTournamentID()
+}
+
+async function setProviderID() {
+    await fetch(
+        "https://americas.api.riotgames.com/lol/tournament-stub/v4/providers?api_key=" + API_KEY, 
+        requestParams("POST", {
+            region: "EUW",
+            url: "https://example.com"
+        })
+    )
+        .then((response) => response.json())
+        .then((data) => {
+            providerID = data
+            console.log("Set providerID to:", providerID)
+        })
+}
+
+async function setTournamentID() {
+    await fetch("https://americas.api.riotgames.com/lol/tournament-stub/v4/tournaments?api_key=" + API_KEY, 
+        requestParams("POST", {
+            name: "League Matchmaking",
+            providerId: providerID
+        })
+    )
+        .then((response) => response.json())
+        .then((data) => {
+            tournamentID = data
+            console.log("Set tournamentID to:", tournamentID)
+        })
+}
+
+function requestParams(type, body) {
+    return {
+        method: type,
+        headers: { "Content-Type": "application/json", },
+        body: JSON.stringify(body),
+    }
+}
 
 
 // const server = http.createServer(async function(req, res) {
