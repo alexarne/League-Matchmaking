@@ -6,7 +6,7 @@ require("dotenv").config()
 
 const app = express()
 const PORT = process.env.PORT
-const URL = process.env.URL + ":" + PORT
+const URL = process.env.URL
 const API_KEY = process.env.API_KEY
 
 app.listen(PORT, () => {
