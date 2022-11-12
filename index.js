@@ -15,7 +15,7 @@ app.listen(PORT, () => {
 app.use(express.static("public"))
 
 app.get("/getCode", async (req, res) => {
-    // console.log(req)
+    console.log(req.params)
     // const code = await fetch(
 
     // )
@@ -27,7 +27,12 @@ app.get("/getCode", async (req, res) => {
     res.json(data);
 })
 
-fetch(URL + "/getCode").then(response => response.json()).then(data => console.log(data))
+fetch(URL + "/getCode"
+    // requestParams("POST", {
+    //     loler: 123,
+    //     hi: "hello"
+    // })
+).then(response => response.json()).then(data => console.log(data))
 console.log("fetched")
 
 // Required for creating codes/games
