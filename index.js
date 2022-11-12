@@ -10,12 +10,13 @@ const API_KEY = process.env.API_KEY
 const app = express()
 app.use(express.json())
 
-app.listen(PORT, () => {
+app.listen(443, () => {
     console.log("Starting server at port " + PORT)
 })
 app.use(express.static("public"))
 
 app.post("/getCode", async (req, res) => {
+    console.log("CALL RECEIVED")
     const response = await fetch(
         `https://americas.api.riotgames.com/lol/tournament-stub/v4/codes?count=1&tournamentId=${tournamentID}&api_key=` + API_KEY,
         requestParams("POST", req.body)
@@ -49,7 +50,7 @@ async function setProviderID() {
         "https://americas.api.riotgames.com/lol/tournament-stub/v4/providers?api_key=" + API_KEY, 
         requestParams("POST", {
             region: "EUW",
-            url: "https://example.com"
+            url: URL + "/getCode"
         })
     )
         .then((response) => response.json())
