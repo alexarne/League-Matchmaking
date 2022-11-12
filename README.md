@@ -4,7 +4,7 @@ Proof of concept for tournament matchmaking in League of Legends using Riot Game
 
 ## Demonstration
 
-http://league-matchmaking.herokuapp.com/
+https://league-matchmaking.herokuapp.com/
 
 
 ## Technologies Used
