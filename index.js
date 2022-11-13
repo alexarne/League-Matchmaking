@@ -10,19 +10,36 @@ const API_KEY = process.env.API_KEY
 const app = express()
 app.use(express.json())
 
-app.listen(443, () => {
+app.listen(PORT, () => {
     console.log("Starting server at port " + PORT)
 })
 app.use(express.static("public"))
 
 app.post("/getCode", async (req, res) => {
-    console.log("CALL RECEIVED")
     const response = await fetch(
         `https://americas.api.riotgames.com/lol/tournament-stub/v4/codes?count=1&tournamentId=${tournamentID}&api_key=` + API_KEY,
         requestParams("POST", req.body)
     )
-    const code = await response.json()
-    res.json(code[0]);
+    if (response.status === 200) {
+        const code = await response.json()
+        res.json(code[0]);
+    } else {
+        res.json("Error " + response.status + "... Try again")
+    }
+})
+
+app.post("/getWinner", async (req, res) => {
+    const code = req.code
+    const response = await fetch(`https://americas.api.riotgames.com/lol/tournament-stub/v4/lobby-events/by-code/${code}?api_key=` + API_KEY)
+    const lobby_events = await response.json()
+    // console.log(lobby_events)
+    res.json(lobby_events)
+})
+
+app.get("/get", (req, res) => {
+    console.log("gotten")
+    res.write("gotten")
+    res.end()
 })
 
 // Required for creating codes/games, static for server
@@ -34,14 +51,25 @@ async function setVars() {
     await setProviderID()
     await setTournamentID()
 
-    fetch(URL + "/getCode",
+    // fetch(URL + "/getCode",
+    //     requestParams("POST", {
+    //         mapType: "SUMMONERS_RIFT",
+    //         pickType: "BLIND_PICK",
+    //         spectatorType: "NONE",
+    //         teamSize: 1
+    //     })
+    // )
+    //     .then(response => { console.log("status:", response.status); return response.json() })
+    //     .then(data => console.log("received:", data))
+    // console.log("fetched")
+
+    fetch(URL + "/getWinner",
         requestParams("POST", {
-            mapType: "SUMMONERS_RIFT",
-            pickType: "BLIND_PICK",
-            spectatorType: "NONE",
-            teamSize: 1
+            code: "EUW9533-TOURNAMENTCODE0001"
         })
-    ).then(response => response.json()).then(data => console.log("received:", data))
+    )
+        .then(response => { console.log("status:", response.status); return response.json() })
+        .then(data => console.log("received:", data))
     console.log("fetched")
 }
 
@@ -50,7 +78,7 @@ async function setProviderID() {
         "https://americas.api.riotgames.com/lol/tournament-stub/v4/providers?api_key=" + API_KEY, 
         requestParams("POST", {
             region: "EUW",
-            url: URL + "/getCode"
+            url: "https://example.com"
         })
     )
         .then((response) => response.json())
