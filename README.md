@@ -10,7 +10,7 @@ been repaired.
 
 ## Demonstration
 
-http://league-matchmaking.herokuapp.com/
+https://league-matchmaking.herokuapp.com/
 
 
 ## Technologies Used
