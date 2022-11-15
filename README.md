@@ -11,7 +11,8 @@ been repaired.
 
 ## Demonstration
 
-> First-time visits may take longer due to server starting from hibernation
+> The server goes into hibernate mode after 35 minutes of inactivity, which causes first-time 
+visits to take a little longer
 
 https://league-matchmaking.herokuapp.com/
 
@@ -26,7 +27,9 @@ server for a more practical and secure implementation.
 
 Furthermore, since in-game side selection can be blocked by uncooperative players, the 
 check for which players have joined is only concerned with whether or not they have joined
-at all, not that they are on the correct team.
+at all, not that they are on the correct team. However, that is only when checking the lobby.
+When checking the result for a finished game, the players must be playing with their correct
+teammates (although disregarding which team is playing on which side).
 
 
 ## Technologies Used

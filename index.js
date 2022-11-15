@@ -31,21 +31,22 @@ const routes = {
 }
 
 /**
- * @Requires same body for code request, see Riot Games' API's documentation.
+ * @Requires server and same body for code request, see Riot Games' API's documentation.
  * @Returns A tournament code
  */
 app.post("/getCode", async (req, res) => {
-    if (!validProviderID || !validTournamentID) await setVars()
-    if (!validProviderID || !validTournamentID) {
+    const tid = await getTournamentID(req.body.server)
+    if (tid === -1) {
         res.status(501)
         res.json("Error 501, service unavailable")
         return
     }
 
     const response = await fetch(
-        `https://americas.api.riotgames.com/lol/tournament-stub/v4/codes?count=1&tournamentId=${tournamentID}&api_key=` + API_KEY,
-        requestParams("POST", req.body)
+        `https://americas.api.riotgames.com/lol/tournament-stub/v4/codes?count=1&tournamentId=${tid}&api_key=` + API_KEY,
+        requestParams("POST", req.body.body)
     )
+
     if (response.status === 200) {
         const code = await response.json()
         res.json(code[0]);
@@ -91,42 +92,9 @@ app.post("/getWinner", async (req, res) => {
 
     // Check latest game in match history to determine winner
     if (winner_info.started === true) {
-        response = await fetch(`https://${routes[server]}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=1&api_key=` + API_KEY)
-        let lastGame = await response.json()
-        if (lastGame.length > 0) {
-            // If there is one, check it
-            response = await fetch(`https://${routes[server]}.api.riotgames.com/lol/match/v5/matches/${lastGame}?api_key=` + API_KEY)
-            lastGame = await response.json()
-            if (lastGame.tournamentCode !== code) {
-                // If same code, game has been completed, confirm teams
-                const team100 = [], team200 = []
-                const participants = lastGame.info.participants
-                for (let i = 0; i < participants.length; i++) {
-                    if (participants[i].teamId === 100) team100.push(participants[i].summonerId)
-                    if (participants[i].teamId === 200) team200.push(participants[i].summonerId)
-                }
-                if (team100.length === team_left.length && team200.length === team_right.length && team100.length === team200.length) {
-                    team100.sort()
-                    team200.sort()
-                    team_left.sort()
-                    team_right.sort()
-                    // Side selection is optional
-                    if (team100[0] !== team_left[0]) [team_left, team_right] = [team_right, team_left]
-                    let valid = true
-                    for (let i = 0; i < team100.length; i++) {
-                        if (team100[i] !== team_left[i] || team200[i] !== team_right[i]) {
-                            valid = false
-                            break
-                        }
-                    }
-                    if (valid) {
-                        console.log(lastGame.info.teams[0].win, lastGame.info.teams[1].win)
-                        winner_info.left_winner = lastGame.info.teams[0].win
-                        winner_info.right_winner = lastGame.info.teams[1].win
-                    }
-                }
-            }
-        }
+        const [left_win, right_win] = await getWinningTeam(server, puuid)
+        winner_info.left_winner = left_win
+        winner_info.right_winner = right_win
     }
 
     res.json(winner_info)
@@ -144,29 +112,72 @@ async function getSummonerIDs(names, server) {
     return [datas, puuid]
 }
 
+async function getWinningTeam(server, puuid) {
+    let response = await fetch(`https://${routes[server]}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=1&api_key=` + API_KEY)
+    let lastGame = await response.json()
+    if (lastGame.length == 0) return [false, false]
+
+    // If there is one, check it
+    response = await fetch(`https://${routes[server]}.api.riotgames.com/lol/match/v5/matches/${lastGame}?api_key=` + API_KEY)
+    lastGame = await response.json()
+    if (lastGame.tournamentCode !== code) return [false, false]
+
+    // If same code, game has been completed, confirm teams
+    const team100 = [], team200 = []
+    const participants = lastGame.info.participants
+    for (let i = 0; i < participants.length; i++) {
+        if (participants[i].teamId === 100) team100.push(participants[i].summonerId)
+        if (participants[i].teamId === 200) team200.push(participants[i].summonerId)
+    }
+    if (team100.length !== team_left.length || team200.length !== team_right.length || team100.length !== team200.length) return [false, false]
+
+    team100.sort()
+    team200.sort()
+    team_left.sort()
+    team_right.sort()
+
+    // Side selection is optional
+    let swapped = false
+    if (team100[0] !== team_left[0]) {
+        [team_left, team_right] = [team_right, team_left]
+        swapped = true
+    }
+
+    let valid = true
+    for (let i = 0; i < team100.length; i++) {
+        if (team100[i] !== team_left[i] || team200[i] !== team_right[i]) {
+            valid = false
+            break
+        }
+    }
+    if (!valid) return [false, false]
+    
+    let left_win = lastGame.info.teams[0].win
+    let right_win = lastGame.info.teams[1].win
+    if (swapped) [left_win, right_win] = [right_win, left_win]
+    return [left_win, right_win]
+}
+
 app.get("/get", (req, res) => {
     console.log("gotten")
     res.write("gotten")
     res.end()
 })
 
-// Required for creating codes/games, static for server
-var providerID
-var tournamentID
-var validProviderID = false
-var validTournamentID = false
-
-// fetch(URL + "/getCode",
-//     requestParams("POST", {
-//         mapType: "SUMMONERS_RIFT",
-//         pickType: "BLIND_PICK",
-//         spectatorType: "NONE",
-//         teamSize: 1
-//     })
-// )
-//     .then(response => { console.log("status:", response.status); return response.json() })
-//     .then(data => console.log("received:", data))
-// console.log("fetched")
+fetch(URL + "/getCode",
+    requestParams("POST", {
+        server: "EUW",
+        body: {
+            mapType: "SUMMONERS_RIFT",
+            pickType: "BLIND_PICK",
+            spectatorType: "NONE",
+            teamSize: 1
+        }
+    })
+)
+    .then(response => { console.log("status:", response.status); return response.json() })
+    .then(data => console.log("received:", data))
+console.log("fetched")
 
 // fetch(URL + "/getWinner",
 //     requestParams("POST", {
@@ -186,32 +197,37 @@ var validTournamentID = false
 //     .then(data => console.log("received:", data))
 // console.log("fetched")
 
-async function setVars() {
-    if (!validProviderID) await setProviderID()
-    await setTournamentID()
+async function getTournamentID(server) {
+    const providerID = await setProviderID(server)
+    return await setTournamentID(providerID)
 }
 
-async function setProviderID() {
-    console.log("Fetching providerID...")
+/**
+ * 
+ * @param {String} server Legal values: "BR", "EUNE", "EUW", "JP", "LAN", "LAS", "NA", "OCE", "PBE", "RU", "TR"
+ */
+async function setProviderID(server) {
+    console.log(`Fetching providerID for ${server}...`)
     const response = await fetch(
         "https://americas.api.riotgames.com/lol/tournament-stub/v4/providers?api_key=" + API_KEY, 
         requestParams("POST", {
-            region: "EUW",
+            region: server,
             url: "https://example.com"
         })
     )
     const data = await response.json()
+    let providerID
 
     if (response.status === 200) {
         providerID = data
-        validProviderID = true
-        console.log("Set providerID to:", providerID)
+        console.log("Received providerID:", providerID)
     } else {
         console.log("providerID failed: Error", response.status)
     }
+    return providerID
 }
 
-async function setTournamentID() {
+async function setTournamentID(providerID) {
     console.log("Fetching tournamentID...")
     const response = await fetch("https://americas.api.riotgames.com/lol/tournament-stub/v4/tournaments?api_key=" + API_KEY, 
         requestParams("POST", {
@@ -220,14 +236,16 @@ async function setTournamentID() {
         })
     )
     const data = await response.json()
+    let tournamentID
 
     if (response.status === 200) {
         tournamentID = data
-        validTournamentID = true
-        console.log("Set tournamentID to:", tournamentID)
+        console.log("Received tournamentID:", tournamentID)
     } else {
+        tournamentID = -1
         console.log("tournamentID failed: Error", response.status)
     }
+    return tournamentID
 }
 
 function requestParams(type, body) {
