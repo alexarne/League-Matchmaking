@@ -1,12 +1,12 @@
 # League Matchmaking
 
-Proof of concept for tournament matchmaking in League of Legends using Riot Games' API. 
-The intended use case for Riot Games' API is to set up a callback URL through which the result 
-is reported once the game has finished. However, this functionality has broken as of 
-November 2022, leaving many platforms with dysfunctional systems. This project intends
+Proof of concept for a tournament matchmaking system in League of Legends using [Riot Games' API](https://developer.riotgames.com/apis). 
+The intended use case for Riot Games' API with regards to tournament games is to set up a callback URL through which the result 
+is reported once the game has finished. However, this functionality broke between the months of September and 
+November of 2022, leaving many platforms with dysfunctional systems. This project intends
 to showcase a quick fix to this problem, which is to repeatedly request results until 
-one can be delivered. I intend to implement the original functionality once the API has
-been repaired.
+one can be delivered, as well as using callbacks. This demonstration also results the game with regards
+to players not showing up, which some third party platforms do not.
 
 
 ## Demonstration
