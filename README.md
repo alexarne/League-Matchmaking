@@ -5,8 +5,10 @@ The intended use case for Riot Games' API with regards to tournament games is to
 is reported once the game has finished. However, this functionality broke between the months of September and 
 November of 2022, leaving many platforms with dysfunctional systems. This project intends
 to showcase a quick fix to this problem, which is to repeatedly request results until 
-one can be delivered, as well as using callbacks. This demonstration also results the game with regards
-to players not showing up, which some third party platforms do not.
+one can be delivered. Callbacks have since then been repaired and are therefore offered as an alternative 
+way of getting the results. This demonstration also results the game with regards
+to players not showing up after a set amount of time, which automates the process even further,
+but is something that third party platforms do not.
 
 
 ## Demonstration
