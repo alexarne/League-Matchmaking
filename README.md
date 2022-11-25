@@ -13,10 +13,14 @@ but is something that third party platforms do not.
 
 ## Demonstration
 
+To come.
+
+<!--- 
 > The server goes into hibernate mode after 35 minutes of inactivity, which causes first-time 
 visits to take a little longer
 
 https://league-matchmaking.herokuapp.com/
+--->
 
 
 ## Disclaimers
