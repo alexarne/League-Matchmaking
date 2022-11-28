@@ -4,8 +4,7 @@ const fetch = (...args) =>
 const { json } = require("express");
 const express = require("express")
 require("dotenv").config()
-// const PORT = process.env.PORT
-const PORT = 443
+const PORT = process.env.PORT
 const URL = process.env.URL
 const API_KEY = process.env.API_KEY
 
