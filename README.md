@@ -10,6 +10,9 @@ way of getting the results. This demonstration also results the game with regard
 to players not showing up after a set amount of time, which automates the process even further,
 but is something that third party platforms do not.
 
+## Status
+
+The baseline of the server's API endpoints have been constructed in [index.js](./index.js) but a frontend is still missing. 
 
 ## Demonstration
 
