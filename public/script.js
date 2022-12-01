@@ -1,4 +1,4 @@
-const URL = "https://league-matchmaking.cyclic.app/"
+const URL = "https://league-matchmaking.cyclic.app"
 
 document.getElementById("title").innerHTML = "title revised"
 // const code = fetch("localhost:3000/getCode")
