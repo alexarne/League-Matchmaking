@@ -1,7 +1,6 @@
 const fetch = (...args) =>
     import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
-const { json } = require("express");
 const express = require("express")
 require("dotenv").config()
 const PORT = process.env.PORT
@@ -16,29 +15,15 @@ app.listen(PORT, () => {
 })
 app.use(express.static("public"))
 
-const routes = {
-    BR1: "americas",
-    EUN1: "europe",
-    EUW1: "europe",
-    JP1: "asia",
-    KR: "asia",
-    LA1: "americas",
-    LA2: "americas",
-    NA1: "americas",
-    OC1: "sea",
-    TR1: "europe",
-    RU: "europe"
-}
-
 /**
  * @Requires server and same body for code request, see Riot Games' API's documentation.
  * @Returns A tournament code
  */
 app.post("/getCode", async (req, res) => {
-    const tid = await getTournamentID(req.body.server)
-    if (tid === -1) {
-        res.status(501)
-        res.json("Error 501, service unavailable")
+    const [tid, fault, status] = await getTournamentID(req.body.server)
+    if (status != 200) {
+        res.status(status)
+        res.json("Error " + fault + " API - " + status + ", " + errorMessage(status) + "... Try again")
         return
     }
 
@@ -52,7 +37,7 @@ app.post("/getCode", async (req, res) => {
         res.json(code[0]);
     } else {
         res.status(response.status)
-        res.json("Error " + response.status + "... Try again")
+        res.json("Error getCode API - " + response.status + ", " + errorMessage(response.status) + "... Try again")
     }
 })
 
@@ -164,20 +149,20 @@ app.get("/get", (req, res) => {
     res.end()
 })
 
-fetch(URL + "/getCode",
-    requestParams("POST", {
-        server: "EUW",
-        body: {
-            mapType: "SUMMONERS_RIFT",
-            pickType: "BLIND_PICK",
-            spectatorType: "NONE",
-            teamSize: 1
-        }
-    })
-)
-    .then(response => { console.log("status:", response.status); return response.json() })
-    .then(data => console.log("received:", data))
-console.log("fetched")
+// fetch(URL + "/getCode",
+//     requestParams("POST", {
+//         server: "EUW",
+//         body: {
+//             mapType: "SUMMONERS_RIFT",
+//             pickType: "BLIND_PICK",
+//             spectatorType: "NONE",
+//             teamSize: 1
+//         }
+//     })
+// )
+//     .then(response => { console.log("status:", response.status); return response.json() })
+//     .then(data => console.log("received:", data))
+// console.log("fetched")
 
 // fetch(URL + "/getWinner",
 //     requestParams("POST", {
@@ -198,8 +183,13 @@ console.log("fetched")
 // console.log("fetched")
 
 async function getTournamentID(server) {
-    const providerID = await setProviderID(server)
-    return await setTournamentID(providerID)
+    const [providerID, pid_status] = await setProviderID(server)
+    if (pid_status != 200) return [-1, "ProviderID", pid_status]
+
+    const [tournamentID, tid_status] = await setTournamentID(providerID)
+    if (tid_status != 200) return [-1, "TournamentID", tid_status]
+
+    return [tournamentID, "None", 200]
 }
 
 /**
@@ -216,15 +206,15 @@ async function setProviderID(server) {
         })
     )
     const data = await response.json()
+    
     let providerID
-
     if (response.status === 200) {
         providerID = data
         console.log("Received providerID:", providerID)
     } else {
-        console.log("providerID failed: Error", response.status)
+        console.log("providerID failed: Error", response.status, errorMessage(response.status))
     }
-    return providerID
+    return [providerID, response.status]
 }
 
 async function setTournamentID(providerID) {
@@ -236,16 +226,15 @@ async function setTournamentID(providerID) {
         })
     )
     const data = await response.json()
+    
     let tournamentID
-
     if (response.status === 200) {
         tournamentID = data
         console.log("Received tournamentID:", tournamentID)
     } else {
-        tournamentID = -1
-        console.log("tournamentID failed: Error", response.status)
+        console.log("tournamentID failed: Error", response.status, errorMessage(response.status))
     }
-    return tournamentID
+    return [tournamentID, response.status]
 }
 
 function requestParams(type, body) {
@@ -254,4 +243,66 @@ function requestParams(type, body) {
         headers: { "Content-Type": "application/json", },
         body: JSON.stringify(body),
     }
+}
+
+
+
+
+
+const routes = {
+    BR1: "americas",
+    EUN1: "europe",
+    EUW1: "europe",
+    JP1: "asia",
+    KR: "asia",
+    LA1: "americas",
+    LA2: "americas",
+    NA1: "americas",
+    OC1: "sea",
+    TR1: "europe",
+    RU: "europe"
+}
+
+function errorMessage(status) {
+    let res = ""
+    switch (status) {
+        case 400:
+            res = "Bad request"
+            break;
+        case 401:
+            res = "Unauthorized"
+            break;
+        case 403:
+            res = "Forbidden"
+            break;
+        case 404:
+            res = "Data not found"
+            break;
+        case 405:
+            res = "Method not allowed"
+            break;
+        case 415:
+            res = "Unsupported media type"
+            break;
+        case 429:
+            res = "Rate limit exceeded"
+            break;
+        case 500:
+            res = "Internal server error"
+            break;
+        case 502:
+            res = "Bad gateway"
+            break;
+        case 503:
+            res = "Service unavailable"
+            break;
+        case 504:
+            res = "Gateway timeout"
+            break;
+
+        default:
+            res = "Unknown error"
+            break;
+    }
+    return res
 }
