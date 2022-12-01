@@ -20,24 +20,25 @@ app.use(express.static("public"))
  * @Returns A tournament code
  */
 app.post("/getCode", async (req, res) => {
-    const [tid, fault, status] = await getTournamentID(req.body.server)
+    const [data, fault, status] = await getTournamentID(req.body.server)
     if (status != 200) {
         res.status(status)
-        res.json("Error " + fault + " API - " + status + ", " + errorMessage(status) + "... Try again")
+        res.json("Error " + fault + " API - " + status + ", " + data.status.message + "... Try again")
         return
     }
+    const tid = data
 
     const response = await fetch(
         `https://americas.api.riotgames.com/lol/tournament-stub/v4/codes?count=1&tournamentId=${tid}&api_key=` + API_KEY,
         requestParams("POST", req.body.body)
     )
+    const json = await response.json()
 
     if (response.status === 200) {
-        const code = await response.json()
-        res.json(code[0]);
+        res.json(json[0]);
     } else {
         res.status(response.status)
-        res.json("Error getCode API - " + response.status + ", " + errorMessage(response.status) + "... Try again")
+        res.json("Error getCode API - " + response.status + ", " + json.status.message + "... Try again")
     }
 })
 
@@ -183,13 +184,13 @@ app.get("/get", (req, res) => {
 // console.log("fetched")
 
 async function getTournamentID(server) {
-    const [providerID, pid_status] = await setProviderID(server)
-    if (pid_status != 200) return [-1, "ProviderID", pid_status]
+    const [pid_data, pid_status] = await setProviderID(server)
+    if (pid_status != 200) return [pid_data, "ProviderID", pid_status]
 
-    const [tournamentID, tid_status] = await setTournamentID(providerID)
-    if (tid_status != 200) return [-1, "TournamentID", tid_status]
+    const [tid_data, tid_status] = await setTournamentID(pid_data)
+    if (tid_status != 200) return [tid_data, "TournamentID", tid_status]
 
-    return [tournamentID, "None", 200]
+    return [tid_data, "None", 200]
 }
 
 /**
@@ -206,15 +207,13 @@ async function setProviderID(server) {
         })
     )
     const data = await response.json()
-    
-    let providerID
+
     if (response.status === 200) {
-        providerID = data
-        console.log("Received providerID:", providerID)
+        console.log("Received providerID:", data)
     } else {
-        console.log("providerID failed: Error", response.status, errorMessage(response.status))
+        console.log("providerID failed: Error", data.status.status_code, data.status.message)
     }
-    return [providerID, response.status]
+    return [data, response.status]
 }
 
 async function setTournamentID(providerID) {
@@ -227,14 +226,12 @@ async function setTournamentID(providerID) {
     )
     const data = await response.json()
     
-    let tournamentID
     if (response.status === 200) {
-        tournamentID = data
-        console.log("Received tournamentID:", tournamentID)
+        console.log("Received tournamentID:", data)
     } else {
-        console.log("tournamentID failed: Error", response.status, errorMessage(response.status))
+        console.log("tournamentID failed: Error", data.status.status_code, data.status.message)
     }
-    return [tournamentID, response.status]
+    return [data, response.status]
 }
 
 function requestParams(type, body) {
@@ -261,48 +258,4 @@ const routes = {
     OC1: "sea",
     TR1: "europe",
     RU: "europe"
-}
-
-function errorMessage(status) {
-    let res = ""
-    switch (status) {
-        case 400:
-            res = "Bad request"
-            break;
-        case 401:
-            res = "Unauthorized"
-            break;
-        case 403:
-            res = "Forbidden"
-            break;
-        case 404:
-            res = "Data not found"
-            break;
-        case 405:
-            res = "Method not allowed"
-            break;
-        case 415:
-            res = "Unsupported media type"
-            break;
-        case 429:
-            res = "Rate limit exceeded"
-            break;
-        case 500:
-            res = "Internal server error"
-            break;
-        case 502:
-            res = "Bad gateway"
-            break;
-        case 503:
-            res = "Service unavailable"
-            break;
-        case 504:
-            res = "Gateway timeout"
-            break;
-
-        default:
-            res = "Unknown error"
-            break;
-    }
-    return res
 }
