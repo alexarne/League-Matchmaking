@@ -27,6 +27,11 @@ function displayCode() {
         label.innerHTML = data
         button.disabled = false
     })
+    .catch((error) => {
+        console.log("Caught error", error)
+        label.innerHTML = "Fetch failed"
+        button.disabled = false
+    })
 }
 
 
