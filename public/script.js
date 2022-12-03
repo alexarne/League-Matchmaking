@@ -1,18 +1,14 @@
 const URL = window.location.href.slice(0, -1)   // Remove last '/'
 
-document.getElementById("title").innerHTML = "title revised"
-// const code = fetch("localhost:3000/getCode")
-// document.getElementById("content").innerHTML = code
-
 function updateRows() {
-    let currentRows = document.querySelectorAll(".config-allowedNames-row").length
+    let currentRows = document.querySelectorAll(".config-allowedPlayers-row").length
     let e = document.getElementById("config-teamSize");
     let newRows = Number(e.options[e.selectedIndex].text);
     
     if (currentRows < newRows) {
         // Add rows
         for (let i = currentRows+1; i <= newRows; i++) {
-            const original = document.getElementById("config-allowedNames-row1")
+            const original = document.getElementById("config-allowedPlayers-row1")
             let clone = original.cloneNode(true)
 
             // Clear text fields
@@ -22,16 +18,20 @@ function updateRows() {
                 inputs[index].value = '';
             }
 
-            clone.id = "config-allowedNames-row" + i
+            clone.id = "config-allowedPlayers-row" + i
             original.parentNode.appendChild(clone)
         }
     } else if (currentRows > newRows) {
         // Remove rows
         for (let i = newRows+1; i <= currentRows; i++) {
-            document.getElementById("config-allowedNames-row" + i).remove()
+            document.getElementById("config-allowedPlayers-row" + i).remove()
         }
     }
 }
+
+const rows = document.getElementById("config-allowedPlayers");
+function showRows() { rows.style.display = "block"; }
+function hideRows() { rows.style.display = "none"; }
 
 function getFormConfig() {
     let e = document.getElementById("config-region");
