@@ -11,6 +11,78 @@
 <body>
     <script defer src="script.js"></script>
     <h1 id="title">title</h1>
+    <div id="configSection">
+        <label for="config-region">Region:</label>
+        <select name="config-region" id="config-region">
+            <option value="EUW">EUW</option>
+            <option value="EUNE">EUNE</option>
+            <option value="BR">BR</option>
+            <option value="JP">JP</option>
+            <option value="LAN">LAN</option>
+            <option value="LAS">LAS</option>
+            <option value="NA">NA</option>
+            <option value="OCE">OCE</option>
+            <option value="RU">RU</option>
+            <option value="TR">TR</option>
+            <option value="PBE">PBE</option>
+        </select>
+        <br>
+        <label for="config-mapType">Map type:</label>
+        <select name="config-mapType" id="config-mapType">
+            <option value="HOWLING_ABYSS">HOWLING_ABYSS</option>
+            <option value="SUMMONERS_RIFT">SUMMONERS_RIFT</option>
+            <option value="TWISTED_TREELINE">TWISTED_TREELINE</option>
+        </select>
+        <br>
+        <label for="config-pickType">Pick type:</label>
+        <select name="config-pickType" id="config-pickType">
+            <option value="DRAFT_MODE">DRAFT_MODE</option>
+            <option value="BLIND_PICK">BLIND_PICK</option>
+            <option value="ALL_RANDOM">ALL_RANDOM</option>
+            <option value="TOURNAMENT_DRAFT">TOURNAMENT_DRAFT</option>
+        </select>
+        <br>
+        <label for="config-spectatorType">Spectator type:</label>
+        <select name="config-spectatorType" id="config-spectatorType">
+            <option value="NONE">NONE</option>
+            <option value="LOBBYONLY">LOBBYONLY</option>
+            <option value="ALL">ALL</option>
+        </select>
+        <br>
+        <div id="config-resultMethod">
+            <label for="config-resultMethod">Resulting method:</label>
+            <input type="radio" id="config-resultMethodChoiceCallback" name="config-resultMethod" value="callback" checked />
+            <label for="config-resultMethodChoiceCallback">Callback</label>
+            <input type="radio" id="config-resultMethodChoiceMatchHistory" name="config-resultMethod" value="match_history" />
+            <label for="config-resultMethodChoiceMatchHistory">Match history</label>
+        </div>
+        <label for="config-teamSize">Team size:</label>
+        <select name="config-teamSize" id="config-teamSize" onchange="updateRows()">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <br>
+        <div id="config-closedLobby">
+            <label for="config-closedLobby">Closed lobby:</label>
+            <input type="radio" id="config-closedLobbyChoiceYes" name="config-closedLobby" value="yes" checked />
+            <label for="config-closedLobbyChoiceYes">Yes</label>
+            <input type="radio" id="config-closedLobbyChoiceNo" name="config-closedLobby" value="no" />
+            <label for="config-closedLobbyChoiceNo">No</label>
+        </div>
+        <div id="config-allowedNames">
+            Allowed players:
+            <div id="config-allowedNames-rows">
+                <div id="config-allowedNames-row1" class="config-allowedNames-row">
+                    <input type="text" class="player" name="player">
+                    <input type="text" class="player" name="player"><br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
     <div id="codeSection">
         <button id="codeButton" onclick="displayCode()">Get Code</button>
         <div>Code: <span id="codeDisplay"></span></div>
