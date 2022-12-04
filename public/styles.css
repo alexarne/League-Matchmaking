@@ -1,3 +1,16 @@
+* {
+    outline: none;
+}
+
 #title {
     color: blue;
+}
+
+.player {
+    margin: 1px;
+    border: 1px solid black;
+}
+
+.player.empty {
+    border: 1px solid red;
 }

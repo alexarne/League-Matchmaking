@@ -14,8 +14,10 @@ function updateRows() {
             // Clear text fields
             let inputs = clone.getElementsByTagName('input');
             for (index = 0; index < inputs.length; ++index) {
-                if(inputs[index].type =="text")
-                inputs[index].value = '';
+                if(inputs[index].type =="text") {
+                    inputs[index].value = '';
+                    inputs[index].classList.remove("empty")
+                }
             }
 
             clone.id = "config-allowedPlayers-row" + i
@@ -33,6 +35,22 @@ const rows = document.getElementById("config-allowedPlayers");
 function showRows() { rows.style.display = "block"; }
 function hideRows() { rows.style.display = "none"; }
 
+function filledRows() {
+    if (!document.getElementById("config-lobbyRestrictionChoiceClosed").checked) return true
+
+    let allFilled = true
+    let playerFields = document.querySelectorAll(".player")
+    playerFields.forEach(e => {
+        e.classList.remove("empty")
+        if (e.value === "") {
+            e.classList.add("empty")
+            allFilled = false
+        }
+    })
+
+    return allFilled
+}
+
 function getFormConfig() {
     let e = document.getElementById("config-region");
     let server = e.options[e.selectedIndex].text;
@@ -48,17 +66,18 @@ function getFormConfig() {
     e = document.getElementById("config-teamSize");
     config["teamSize"] = Number(e.options[e.selectedIndex].text);
 
-    if (document.getElementById("config-closedLobbyChoiceYes").checked) {
+    if (document.getElementById("config-lobbyRestrictionChoiceClosed").checked) {
         let arr = []
         document.querySelectorAll(".player").forEach(e => arr.push(e.value))
         config["allowedSummonerIds"] = arr
     }
 
-    console.log(config)
     return [server, useCallback, config]
 }
 
 function displayCode() {
+    if (!filledRows()) return
+
     const label = document.getElementById("codeDisplay")
     const button = document.getElementById("codeButton")
     label.innerHTML = "Loading..."

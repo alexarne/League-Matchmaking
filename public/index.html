@@ -10,7 +10,7 @@
 </head>
 <body>
     <script defer src="script.js"></script>
-    <h1 id="title">title</h1>
+    <h1 id="title">Matchmaking Tool</h1>
     <div id="configSection">
         <label for="config-region">Region:</label>
         <select name="config-region" id="config-region">
@@ -65,12 +65,12 @@
             <option value="5">5</option>
         </select>
         <br>
-        <div id="config-closedLobby">
-            <label for="config-closedLobby">Closed lobby:</label>
-            <input type="radio" id="config-closedLobbyChoiceYes" name="config-closedLobby" value="yes" onclick="showRows()" checked />
-            <label for="config-closedLobbyChoiceYes">Yes</label>
-            <input type="radio" id="config-closedLobbyChoiceNo" name="config-closedLobby" value="no" onclick="hideRows()" />
-            <label for="config-closedLobbyChoiceNo">No</label>
+        <div id="config-lobbyRestriction">
+            <label for="config-lobbyRestriction">Lobby restriction:</label>
+            <input type="radio" id="config-lobbyRestrictionChoiceClosed" name="config-lobbyRestriction" value="closed" onclick="showRows()" checked />
+            <label for="config-lobbyRestrictionChoiceClosed">Closed</label>
+            <input type="radio" id="config-lobbyRestrictionChoiceOpen" name="config-lobbyRestriction" value="open" onclick="hideRows()" />
+            <label for="config-lobbyRestrictionChoiceOpen">Open</label>
         </div>
         <div id="config-allowedPlayers">
             Allowed players:
