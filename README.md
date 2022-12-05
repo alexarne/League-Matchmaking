@@ -8,7 +8,7 @@ to showcase a quick fix to this problem, which is to repeatedly request results 
 one can be delivered. Callbacks have since then been repaired and are therefore offered as an alternative 
 way of getting the results. This demonstration also results the game with regards
 to players not showing up after a set amount of time, which automates the process even further,
-but is something that third party platforms do not.
+but is something that some third party platforms do not.
 
 ## Status
 
